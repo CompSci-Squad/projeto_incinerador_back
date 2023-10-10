@@ -26,8 +26,6 @@ go install github.com/cosmtrek/air@latest
 air run .
 ```
 
-5. Go to API Docs page (Swagger): [localhost:5000/docs/index.html](http://localhost:5000/docs/index.html)
-
 # Setup SNS e SQS utilizando localstack
 
 Pré-requisitos: `aws cli`, `docker`, `docker-compose`
@@ -45,38 +43,6 @@ aws_secret_access_key = fake-secret-key
 ```
 
 Agora, sempre que for utilizar os comandos da AWS CLI, lembre-se de colocar a flag `--profile=localstack`.
-
-## Criar um tópico SNS:
-
-```bash
-aws --profile=localstack --endpoint-url=http://localhost:4566 sns create-topic --name nome-do-seu-topico
-```
-
-Isso retornará o ARN do tópico criado.
-
-Vai retornar o arn do tópico criado.
-
-## Criar uma fila SQS:
-
-```bash
-aws --profile=localstack --endpoint-url=http://localhost:4566 sqs create-queue --queue-name nome-da-sua-fila
-```
-
-Isso retornará o endereço HTTP da sua fila. Você precisará dele para descobrir o endereço ARN da sua fila para realizar a assinatura dela em um tópico SNS.
-
-## Criar a assinatura de uma fila no tópico SNS:
-
-```bash
-aws --profile=localstack --endpoint-url=http://localhost:4566 sqs get-queue-attributes --queue-url http://localhost:4566/000000000000/nome-da-sua-fila --attribute-names QueueArn
-```
-
-Com o arn da sua fila em mãos basta criar a assinatura.
-
-```bash
-aws --profile=localstack --endpoint-url=http://localhost:4566 sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:nome-do-seu-topico --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:nome-da-sua-fila
-```
-
-Essas instruções detalham como configurar e executar sua aplicação localmente, incluindo a configuração do SNS e SQS usando o LocalStack. Seguindo as etapas acima, você pode executar sua aplicação com live reload e configurar os serviços da AWS necessários para testar suas funcionalidades localmente.
 
 # Como criar novos módulos
 
