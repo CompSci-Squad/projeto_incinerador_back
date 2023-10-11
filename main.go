@@ -1,10 +1,12 @@
 package main
 
 import (
+	"goapi/infrastructure/database"
 	"goapi/internal/middleware"
 	"goapi/internal/routes"
 	"goapi/pkg/configs"
 	"goapi/pkg/utils"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,6 +23,13 @@ import (
 func main() {
 	// Define Fiber config.
 	config := configs.FiberConfig()
+
+	// Define a new Fiber app with config.
+	// Define Fiber config.
+
+	if err := database.OpenDBConnection("mongodb"); err != nil {
+		log.Fatalln("Cannot connect to mongodb!")
+	}
 
 	// Define a new Fiber app with config.
 	app := fiber.New(config)
