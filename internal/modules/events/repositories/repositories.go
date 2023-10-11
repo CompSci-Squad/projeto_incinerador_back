@@ -30,5 +30,5 @@ func NewEventsRepository() (EventsRepositoriesImpl, error) {
 	database := db.Mongo.Database("app")
 	eventsCollection := database.Collection("events")
 
-	return &EventsRepository{eventsCollections}, nil
+	return &EventsRepository{eventsCollection}, nil
 }
