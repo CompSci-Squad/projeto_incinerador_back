@@ -9,11 +9,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type Place struct {
+	Street     string `bson:"street"`
+	PostalCode string `bson:"postal_code"`
+	Number     string `bson:"number"`
+}
+
 type Event struct {
 	baseentity.Base `bson:", inline"`
 	Name            string     `bson:"name"`
 	Description     string     `bson:"description"`
 	DateTime        *time.Time `bson:"date_time"`
+	Place           *Place     `bson:"place"`
 }
 
 func (b Event) Value() primitive.M {

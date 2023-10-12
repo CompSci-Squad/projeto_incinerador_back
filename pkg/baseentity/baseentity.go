@@ -3,12 +3,12 @@ package baseentity
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
 )
 
 type Base struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	CreatedAt *time.Time         `bson:"createdAt,omitempty" json:"createdAt,omitempty"`
-	UpdatedAt *time.Time         `bson:"updatedAt,omitempty" json:"updatedAt,omitempty"`
-	DeletedAt *time.Time         `bson:"deletedAt,omitempty" json:"deletedAt,omitempty"`
+	ID        *uuid.UUID `bson:"id,omitempty" json:"id,omitempty" validate:"required,uuid"`
+	CreatedAt *time.Time `bson:"created_at,omitempty" json:"created_at,omitempty"`
+	UpdatedAt *time.Time `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
+	DeletedAt *time.Time `bson:"deleted_at,omitempty" json:"deleted_at,omitempty"`
 }

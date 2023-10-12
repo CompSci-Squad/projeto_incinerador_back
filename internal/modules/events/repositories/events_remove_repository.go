@@ -6,21 +6,18 @@ import (
 	"goapi/pkg/errors"
 	"time"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (repo *EventsRepository) Delete(id string) error {
+func (repo *EventsRepository) Delete(id uuid.UUID) error {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	mongoId, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{Key: "_id", Value: mongoId}}
-	opts := options.Delete().SetHint(bson.D{{Key: "_id", Value: 1}})
+	filter := bson.D{{Key: "id", Value: id}}
 
-	_, err := repo.eventsCollections.DeleteOne(ctxTimeout, filter, opts)
+	_, err := repo.eventsCollections.DeleteOne(ctxTimeout, filter)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return errors.NotFound(errors.Message{

@@ -7,45 +7,35 @@ import (
 	"goapi/pkg/errors"
 	"time"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (repo *EventsRepository) Update(id string, payload *entities.Event) (*entities.Event, error) {
+func (repo *EventsRepository) Update(id *uuid.UUID, payload *entities.Event) (*entities.Event, error) {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
 	updateAt := time.Now()
 	payload.UpdatedAt = &updateAt
+	newEvent := entities.Event{}
 
-	mongoId, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{Key: "_id", Value: mongoId}}
-	update := bson.D{{Key: "$set", Value: payload.Value()}}
+	filter := bson.D{{Key: "id", Value: id}}
+	update := bson.M{"$set": (*payload).Value()}
 
-	_, err := repo.eventsCollections.UpdateOne(ctxTimeout, filter, update)
+	err := repo.eventsCollections.FindOneAndUpdate(ctxTimeout, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&newEvent)
+
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.NotFound(errors.Message{
 				"error": true,
-				"msg":   fmt.Sprintf("Documents with ID: %s is not found", id),
+				"msg":   fmt.Sprintf("Event with ID: %s is not found", id),
 			})
 		}
 
 		return nil, err
 	}
 
-	err = repo.eventsCollections.FindOne(ctxTimeout, filter).Decode(payload)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, errors.NotFound(errors.Message{
-				"error": true,
-				"msg":   fmt.Sprintf("Documents with ID: %s is not found", id),
-			})
-		}
-
-		return nil, err
-	}
-
-	return payload, nil
+	return &newEvent, nil
 }

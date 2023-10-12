@@ -1,9 +1,24 @@
 package services
 
-type OrganizationServicesImpl interface {
-	Store(body *dtos.OrganizationStoreRequest) (*dtos.OrganizationStoreResponse, error)
-	Index(payload *dtos.OrganizationIndexRequest) (*dtos.OrganizationIndexResponse, error)
-	Show(id string) (*dtos.OrganizationShowResponse, error)
-	Update(payload *dtos.OrganizationUpdateRequest) (*dtos.OrganizationUpdateResponse, error)
-	Remove(payload *dtos.PlanRequest) (*dtos.OrganizationUpdateResponse, error)
+import (
+	"goapi/internal/modules/events/dtos"
+	"goapi/internal/modules/events/repositories"
+
+	"github.com/google/uuid"
+)
+
+type EventServicesImpl interface {
+	Store(eventId *uuid.UUID, body *dtos.EventStoreRequest) (*dtos.EventStoreResponse, error)
+	Index(payload *dtos.EventsIndexRequest) (*dtos.EventIndexResponse, error)
+	Show(id uuid.UUID) (*dtos.EventShowResponse, error)
+	Update(id *uuid.UUID, payload *dtos.EventUpdateRequest) (*dtos.EventUpdateResponse, error)
+	Remove(id *uuid.UUID) error
+}
+
+type EventService struct {
+	EventRepository repositories.EventsRepositoriesImpl
+}
+
+func NewEventSerive(eventRepository repositories.EventsRepository) {
+	return &EventService{&eventRepository}
 }

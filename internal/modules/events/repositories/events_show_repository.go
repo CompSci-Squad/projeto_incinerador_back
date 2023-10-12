@@ -7,17 +7,15 @@ import (
 	"goapi/pkg/errors"
 	"time"
 
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (repo *EventsRepository) Show(id string) (*entities.Event, error) {
+func (repo *EventsRepository) Show(id uuid.UUID) (*entities.Event, error) {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
-
-	objectId, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{Key: "_id", Value: objectId}}
+	filter := bson.D{{Key: "id", Value: id}}
 
 	data := entities.Event{}
 	err := repo.eventsCollections.FindOne(ctxTimeout, filter).Decode(&data)
@@ -25,7 +23,7 @@ func (repo *EventsRepository) Show(id string) (*entities.Event, error) {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.NotFound(errors.Message{
 				"error": true,
-				"msg":   fmt.Sprintf("documents with the given ID: %s is not found", id),
+				"msg":   fmt.Sprintf("event with the given ID: %s is not found", id),
 			})
 		}
 
